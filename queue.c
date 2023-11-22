@@ -1,73 +1,77 @@
-#include<stdio.h>
-#include<stdlib.h>
-#define SIZE 5
+#include <stdio.h>
+#include <stdlib.h>
 
-int queue[SIZE], front = -1, rear = -1, count = 0;
+// A linked list node
+struct Node {
+    int data;
+    struct Node* next;
+};
 
-void insert() {
-    int element;
-    if(rear == SIZE-1) {
-        printf("\nQueue is Full\n");
-    } else {
-        if(front == -1) {
-            front = 0;
-        }
-        printf("\nEnter the element to be inserted: ");
-        scanf("%d", &element);
-        rear++;
-        queue[rear] = element;
-        count++;
-        printf("\nElement Inserted\n");
-    }
+// A queue has a front and a rear
+struct Queue {
+    struct Node* front;
+    struct Node* rear;
+};
+
+// To create a new queue, we need to initialize the front and rear as NULL
+struct Queue* createQueue() {
+    struct Queue* newQueue = (struct Queue*)malloc(sizeof(struct Queue));
+    newQueue->front = newQueue->rear = NULL;
+    return newQueue;
 }
 
-void delete() {
-    if(front == -1) {
-        printf("\nQueue is Empty\n");
-    } else {
-        printf("\nDeleted Element is: %d\n", queue[front]);
-        front++;
-        if(front > rear) {
-            front = rear = -1;
-        }
-        count--;
+// Function to add an element to the queue using enqueue operation
+void enqueue(struct Queue* queue, int data) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = data;
+    newNode->next = NULL;
+
+    if (queue->rear == NULL) {
+        queue->front = queue->rear = newNode;
+        return;
     }
+
+    queue->rear->next = newNode;
+    queue->rear = newNode;
 }
 
-void display() {
-    if(front == -1) {
-        printf("\nQueue is Empty\n");
-    } else {
-        printf("\nFront->%d", queue[front]);
-        for(int i = front + 1; i <= rear; i++) {
-            printf("->%d", queue[i]);
-        }
-        printf("\nTotal Number of Elements: %d\n", count);
+// Function to remove an element from the queue using dequeue operation
+int dequeue(struct Queue* queue) {
+    if (queue->front == NULL) {
+        printf("Queue is empty.\n");
+        return -1;
     }
+
+    struct Node* temp = queue->front;
+    int data = temp->data;
+    queue->front = temp->next;
+
+    if (queue->front == NULL) {
+        queue->rear = NULL;
+    }
+
+    free(temp);
+    return data;
+}
+
+// Function to check if the queue is empty
+int isEmpty(struct Queue* queue) {
+    if (queue->front == NULL) {
+        return 1;
+    }
+    return 0;
 }
 
 int main() {
-    int choice;
-    while(1) {
-        printf("\nQueue Operations: ");
-        printf("\n1. Insert \n2. Delete \n3. Display \n4. Exit \n\n");
-        printf("Enter your choice: ");
-        scanf("%d", &choice);
-        switch(choice) {
-            case 1:
-                insert();
-                break;
-            case 2:
-                delete();
-                break;
-            case 3:
-                display();
-                break;
-            case 4:
-                exit(0);
-            default:
-                printf("\nInvalid Choice\n");
-        }
+    struct Queue* queue = createQueue();
+    enqueue(queue, 1);
+    enqueue(queue, 2);
+    enqueue(queue, 3);
+    enqueue(queue, 4);
+
+    while (!isEmpty(queue)) {
+        printf("%d\n", dequeue(queue));
     }
+
     return 0;
 }
