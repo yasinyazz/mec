@@ -1,60 +1,77 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include<stdio.h>
+#include<stdlib.h>
 
-struct Node {
+// Node definition
+typedef struct Node {
     int data;
     struct Node* next;
-};
+} Node;
 
-struct Node* top = NULL;
+// Function prototypes
+void push(Node**, int);
+int pop(Node**);
+void printStack(Node*);
 
-void push(int data) {
-    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
-    newNode->data = data;
-    newNode->next = top;
-    top = newNode;
-}
-
-int pop() {
-    if(top == NULL) {
-        printf("Stack is empty.\n");
-        return -1;
-    }
-    struct Node* temp = top;
-    int poppedData = temp->data;
-    top = temp->next;
-    free(temp);
-    return poppedData;
-}
-
-int peek() {
-    if(top == NULL) {
-        printf("Stack is empty.\n");
-        return -1;
-    }
-    return top->data;
-}
-
-int isEmpty() {
-    return top == NULL;
-}
-
-void printStack() {
-    struct Node* temp = top;
-    while(temp != NULL) {
-        printf("%d -> ", temp->data);
-        temp = temp->next;
-    }
-    printf("NULL\n");
-}
-
+// Main function
 int main() {
-    push(1);
-    push(2);
-    push(3);
-    printStack();
-    printf("Peeked element: %d\n", peek());
-    printf("Popped element: %d\n", pop());
-    printStack();
+    int val, choice;
+    Node *top = NULL, *t = NULL;
+
+    printf("Stack Operations: Push, Pop and Display\n");
+    do {
+        printf("\nChoose operation:\n1. Push\n2. Pop\n3. Display\n4. Exit\n");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("\nEnter value to push: ");
+                scanf("%d", &val);
+                push(&top, val);
+                break;
+
+            case 2:
+                val = pop(&top);
+                if (val != -1)
+                    printf("\nPopped value: %d\n", val);
+                else
+                    printf("\nStack is empty. Unable to pop.\n");
+                break;
+
+            case 3:
+                printf("\nStack contents:\n");
+                printStack(top);
+                break;
+        }
+    } while (choice != 4);
+
     return 0;
+}
+
+// Function to add an element to the stack
+void push(Node** top_ref, int new_val) {
+    Node* new_node = (Node*) malloc(sizeof(Node));
+    new_node->data = new_val;
+    new_node->next = (*top_ref);
+    (*top_ref) = new_node;
+}
+
+// Function to remove an element from the stack
+int pop(Node** top_ref) {
+    if (*top_ref == NULL)
+        return -1;
+
+    Node* temp = *top_ref;
+    int popped = temp->data;
+    *top_ref = temp->next;
+    free(temp);
+
+    return popped;
+}
+
+// Function to print the stack
+void printStack(Node* node) {
+    while (node != NULL) {
+        printf("%d ", node->data);
+        node = node->next;
+    }
 }
